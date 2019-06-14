@@ -1,6 +1,6 @@
 Attendance System using Image Processing and QR Code
 
-The report inside the FinalProject folder it self.
+This project is based on a terminal commands. So there might be issues running this project on windows.
 
 Kindly install packages, before running the project:
 

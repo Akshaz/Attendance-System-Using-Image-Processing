@@ -4,6 +4,8 @@ import os
 import numpy as np
 import datetime
 import sys
+import picamera
+import io
 
 """
 Start: 
@@ -79,24 +81,23 @@ def cameraWindow(NameEntry, IDEntry):
     genMainWindow(main)
 
 """
+def read():
+    data = io.BytesIO()
+    with picamera.PiCamera() as camera:
+            camera.capture(data, format='jpeg')
+    data = np.fromstring(data.getvalue(), dtype=np.uint8)
+    image = cv2.imdecode(data, 1)
+    cv2.imwrite(config.DEBUG_IMAGE, image)
+    return image
+
 """
 def cameraCapture(i, name, id):
     
     cap = cv2.VideoCapture(0)
     temp = i
     
-    while(i < (temp+60)):
-        ret, frame = cap.read()
-        fileName = "{}+{}+{}.jpeg".format(name, id, i)
-        cv2.imwrite(fileName ,frame)
-        key = cv2.waitKey(1)
-        
-        if ord('q') == key:
-            break
-        i = i + 1
-    
-    cap.release()
-    cv2.destroyAllWindows()
+    frame = read()
+cameraCapture(0, "A", "119")
 """
 """
 def imageCapture(id, name):
@@ -158,52 +159,18 @@ def trainImage():
     recognizer.save("Trained.yml")
     os.chdir("../")
 """
-"""
+
 def recognize():
-    
-    conn, cur = generateList()
-    cap = cv2.VideoCapture(0)
-    recognizer = cv2.face.LBPHFaceRecognizer_create()
-    recognizer.read("../Trained Model/Trained.yml")
     harcascadePath = "../haarcascade_frontalface_default.xml"
     faceCascade = cv2.CascadeClassifier(harcascadePath) 
-    
-    while(True):
-        
-        ret, frame = cap.read()
+    while(True): 
+        frame = read()
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         face = faceCascade.detectMultiScale(gray, 1.2,5)
-        
         for (x,y,w,h) in face:
-            
             cv2.rectangle(frame,(x,y),(x+w,y+h),(225,0,0),2)
-            Id, conf = recognizer.predict(gray[y:y+h,x:x+w]) 
-            cv2.putText(frame, str(Id)+" - "+str(conf),(x,y+h), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 1)
-            cv2.imshow('Face Recognition Based Attendance System' ,frame)                                
-            
-            if(conf < 80):        
-                if(cur.execute("SELECT * FROM Attendance WHERE ID == {};".format(Id))):
-                    cur.execute("SELECT Val FROM Attendance WHERE ID == {};".format(Id))
-                    result = cur.fetchall()
-                    time = str(datetime.datetime.time(datetime.datetime.now()))
-                    
-                    if result[0][0] == 0:
-                        cur.execute("UPDATE Attendance SET Val = {}, timeIn = \"{}\", timeOut = \"{}\" WHERE ID == {};".format(result[0][0]+1, time, time, Id))
-                    else:
-                        cur.execute("UPDATE Attendance SET Val = {}, timeOut = \"{}\" WHERE ID == {};".format(result[0][0]+1, time, Id))
-                    conn.commit()
+        cv2.imwrite("output.jpg", frame)
 
-        key = cv2.waitKey(1)
-        
-        if ord('q') == key:
-            break
-    
-    cap.release()
-    cv2.destroyAllWindows()
-    os.chdir("../")
-    
-    return conn, cur
-""" 
 """
 def generateList():
     

@@ -3,73 +3,25 @@ import cv2
 import os
 import numpy as np
 import datetime
-import qrcode
-import tkinter as tk
 import sys
 
+"""
+Start: 
+def genMainWindow():
+    Registration: registrationWindow()
+    Take Attendance: selectSlotWindow()
+    Display Attendance: displayAttendance()
+"""
 
-def genMainWindow(main):
-    mainWindowObjects = []
-    Head = tk.Label(main, text = "Face Recognition Based Attendance System", height = 15, font=("Helvetica", 28), bg = 'hotpink')
-    mainWindowObjects.append(Head)
-    Registration = tk.Button(main, text = "Take Images",command = lambda : registrationWindow(main, mainWindowObjects), height = 5, width = 25)
-    mainWindowObjects.append(Registration)
-    Attendance = tk.Button(main, text= "Take Attendance", command = lambda : selectSlotWindow(main, mainWindowObjects), height = 5, width = 25)
-    mainWindowObjects.append(Attendance)
-    DisplayAttendance = tk.Button(main, text="Display Attendance", command = lambda : displayAttendance(main, mainWindowObjects), height = 5, width = 25)
-    mainWindowObjects.append(DisplayAttendance)
-    Quit = tk.Button(main, text="Quit", command = lambda : main.destroy(), height = 5, width = 25)
-    mainWindowObjects.append(Quit)
-    Head.pack(fill = tk.Y)
-    Registration.pack(side = tk.LEFT, padx = 5)
-    Attendance.pack(side = tk.LEFT, padx = 5)
-    DisplayAttendance.pack(side = tk.LEFT, padx = 5)
-    Quit.pack(side = tk.LEFT, padx = 5)
+"""
+Registration start: 
+def registrationWindow():
+    Submit: cameraWindow(NameEntry, IDEntry)
+"""
 
-
-def registrationWindow(main ,mainWindowObjects):
-    registrationWindowObjects = []
-
-    for i in mainWindowObjects:
-        i.destroy()
-
-    Head = tk.Label(main, text = "Registration/Login", font = ("Helvetica", 26), bg = 'hot pink')
-    registrationWindowObjects.append(Head)
-    NameLabel = tk.Label(main, text = "Enter Name", font = ("Helvetica", 20), bg = 'steelblue')
-    registrationWindowObjects.append(NameLabel)
-    NameEntry = tk.Entry(main)
-    registrationWindowObjects.append(NameEntry)
-    IDLabel = tk.Label(main, text = "Enter ID", font = ("Helvetica", 20), bg = 'steelblue')
-    registrationWindowObjects.append(IDLabel)
-    IDEntry = tk.Entry(main)
-    registrationWindowObjects.append(IDEntry)
-    SubmitButton = tk.Button(main, text = "Submit", command = lambda : cameraWindow(main, NameEntry, IDEntry, registrationWindowObjects), height = 5, width = 25)
-    registrationWindowObjects.append(SubmitButton)
-    backButton = tk.Button(main, text = "Back", command = lambda : back(), height = 5, width = 25) 
-    registrationWindowObjects.append(backButton)
-    
-    def back():
-        for i in registrationWindowObjects:
-            i.destroy()
-        genMainWindow(main)
-    
-    Head.pack(pady = 25, fill = tk.X)
-    NameLabel.pack(pady = 10, fill = tk.X, padx = 5)
-    NameEntry.pack()
-    IDLabel.pack(pady = 10, fill = tk.X, padx = 5)
-    IDEntry.pack()
-    SubmitButton.pack(padx = 120, side = tk.LEFT)
-    backButton.pack(padx = 120, side = tk.RIGHT)
-    
-
-def takeAttendanceWindow(main, selectSlotWindowObjects, classStartTime, classEndTime):
-    
-    for i in selectSlotWindowObjects:
-        i.destroy()
-
+"""
+def takeAttendanceWindow(classStartTime, classEndTime):
     conn, cur = recognize()
-    timeNow, timeStop = generateQRCode()
-
     cur.execute("SELECT * FROM Attendance;")
     result = cur.fetchall()
     
@@ -84,42 +36,14 @@ def takeAttendanceWindow(main, selectSlotWindowObjects, classStartTime, classEnd
     
     conn.commit()
     conn.close()
-    genMainWindow(main)
+    genMainWindow()
+"""
 
-
-def selectSlotWindow(main, mainWindowObjects):
-    
-    selectSlotWindowObjects = []
-    
-    for i in mainWindowObjects:
-        i.destroy()
-    
-    Head = tk.Label(main, text = "Slot Selection", font = ("Helvetica", 28), bg = 'hotpink')
-    selectSlotWindowObjects.append(Head)
-    variable = tk.StringVar()
-    slotLabel = tk.Label(main, text = "Select Slot : ", width = '50', height = '5', bg = 'steelblue')
-    selectSlotWindowObjects.append(slotLabel)
-    choices = ['1st', '2nd', '3rd', '4th']
-    slotDropDown = tk.OptionMenu(main, variable, *choices)
-    slotDropDown.configure(width = '50', height = '5', background = 'skyblue')
-    selectSlotWindowObjects.append(slotDropDown)
-    variable.set(choices[0])
-    backButton = tk.Button(main, text = 'Back', command = lambda:back(), bg = 'skyblue', height = 5, width = 25)
-    selectSlotWindowObjects.append(backButton)
-    submitButton = tk.Button(main, text = 'Submit', command = lambda : submitClicked(), bg = 'skyblue', height = 5, width = 25)
-    selectSlotWindowObjects.append(submitButton)
-
-
-    def back():
-        for i in selectSlotWindowObjects:
-            i.destroy()
-        genMainWindow(main)
-
-
+"""
+Select slot window:
+def selectSlotWindow():
     def submitClicked():
-
         choice = variable.get()
-        
         if choice == '1st':
             classStartTime = datetime.datetime.now().replace(hour = 8, minute = 30, second = 0, microsecond = 0)
             classEndTime = datetime.datetime.now().replace(hour = 10, minute = 00, second = 0, microsecond = 0)
@@ -133,15 +57,10 @@ def selectSlotWindow(main, mainWindowObjects):
             classStartTime = datetime.datetime.now().replace(hour = 2, minute = 50, second = 0, microsecond = 0)
             classEndTime = datetime.datetime.now().replace(hour = 4, minute = 20, second = 0, microsecond = 0)
         takeAttendanceWindow(main, selectSlotWindowObjects, classStartTime, classEndTime)
-    
-    Head.pack(pady = 10, fill = tk.X)
-    slotLabel.pack(fill = tk.X, padx = 10, pady = 10)
-    slotDropDown.pack(fill = tk.X, padx = 10, pady = 5)
-    backButton.pack(pady = 5,side = tk.LEFT, padx=120, anchor = tk.W)
-    submitButton.pack(pady = 5, side = tk.LEFT, padx=120, anchor = tk.W)
+"""
 
-
-def cameraWindow(main, NameEntry, IDEntry,registrationWindowObjects):
+"""
+def cameraWindow(NameEntry, IDEntry):
     
     name = NameEntry.get()
     NameEntry.destroy()
@@ -159,7 +78,8 @@ def cameraWindow(main, NameEntry, IDEntry,registrationWindowObjects):
     WaitingLabel.destroy()
     genMainWindow(main)
 
-
+"""
+"""
 def cameraCapture(i, name, id):
     
     cap = cv2.VideoCapture(0)
@@ -177,10 +97,9 @@ def cameraCapture(i, name, id):
     
     cap.release()
     cv2.destroyAllWindows()
-    
-
-def imageCapture(name, id, main, SmileLabel):
-    
+"""
+"""
+def imageCapture(id, name):
     os.chdir("Dataset")
     i = 0
     destinationFolder = name + "+" +str(id)
@@ -202,17 +121,11 @@ def imageCapture(name, id, main, SmileLabel):
         os.chdir(destinationFolder)
     
     cameraCapture(i, name, id)
-    os.chdir("../")
-    
-    SmileLabel.destroy()
-    WaitingLabel = tk.Label(main, text = 'Images Taken! Please wait till images are processed', font = ("Helvetica", 28), bg = 'skyblue')
-    WaitingLabel.pack(fill = tk.BOTH)
-    
+    os.chdir("../")    
     trainImage()
-
-    return WaitingLabel
-
-
+    return
+"""
+"""
 def trainImage():
     
     faces = []
@@ -244,8 +157,8 @@ def trainImage():
     recognizer.train(faces, np.array(ids))
     recognizer.save("Trained.yml")
     os.chdir("../")
-
-
+"""
+"""
 def recognize():
     
     conn, cur = generateList()
@@ -290,8 +203,8 @@ def recognize():
     os.chdir("../")
     
     return conn, cur
-    
-
+""" 
+"""
 def generateList():
     
     os.chdir("Dataset")
@@ -317,16 +230,10 @@ def generateList():
     conn = sqlite3.connect(filename)
     cur = conn.cursor()
     return conn, cur
+"""
 
-
-def displayAttendance(main, mainWindowObjects):
-    
-    stringToDisplay = " "
-    displayAttendanceObjects = []
-    
-    for i in mainWindowObjects:
-        i.destroy() 
-    
+"""
+To check attendance: 
     os.chdir("Attendance")
     
     filename = str(datetime.datetime.date(datetime.datetime.now()))+'.db'
@@ -334,54 +241,4 @@ def displayAttendance(main, mainWindowObjects):
     cur = conn.cursor()
     cur.execute("SELECT * FROM Attendance;")
     result = cur.fetchall()
-    
-    Head = tk.Label(main, text = "Attendance Report", font =("Helvetica", 28), bg = 'hotpink')
-    displayAttendanceObjects.append(Head)
-    textLabel = tk.Label(main, text = "     Id     |     Present/Absent     ", font = ("Helvetica", 26), bg = 'steelblue')
-    displayAttendanceObjects.append(textLabel)
-    textBox = tk.Text(main, height = len(result), width = 100)
-    displayAttendanceObjects.append(textBox)
-    closeButton = tk.Button(main, text = "Close", command = lambda : close(), height = 3, width = 25)
-    displayAttendanceObjects.append(closeButton)
-
-    for i in range(0, len(result)):
-        
-        if result[i][4] == 0:
-            stringToDisplay = stringToDisplay + "     " + str(result[i][0]) + "     |     Absent      \n"
-        
-        else:
-            stringToDisplay = stringToDisplay + "     " + str(result[i][0]) + "     |     Present     \n"
-    
-    def close():
-        
-        for i in displayAttendanceObjects:
-            i.destroy()
-            conn.close()
-        
-        os.chdir("../")
-        genMainWindow(main)
-
-    textBox.delete(1.0, tk.END)
-    textBox.insert(tk.END, stringToDisplay)
-    Head.pack(pady = 10, fill = tk.X)
-    textLabel.pack(pady = 10, padx = 5, fill = tk.X)
-    textBox.pack(pady = 10, padx = 20)
-    closeButton.pack(pady = 10, padx = 5)
-
-
-def generateQRCode():
-    
-    timeNow = datetime.datetime.time(datetime.datetime.now())
-    img = qrcode.make(timeNow)
-    timeStop = timeNow.replace(minute = timeNow.minute+1)
-    img.show()
-    
-    return timeNow, timeStop
-    
-    
-main = tk.Tk(className = " Face Recognition Based Attendance System")
-main.configure(background = 'skyblue')
-main.geometry("950x700")
-genMainWindow(main)
-main.mainloop()
-
+"""

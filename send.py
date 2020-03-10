@@ -28,7 +28,9 @@ def recognize():
         face = faceCascade.detectMultiScale(gray, 1.2,5)
         for (x,y,w,h) in face:
             cv2.rectangle(frame,(x,y),(x+w,y+h),(225,0,0),2)
-	yield(bR'--frame\r\nContent-Type:image/jpeg\r\n\r\r'+frame+bR'\r\n')
+        is_success, im_buf_arr = cv2.imencode(".jpg", frame)
+        byte_im = im_buf_arr.tobytes()
+        yield(bR'--frame\r\nContent-Type:image/jpeg\r\n\r\r'+byte_im+bR'\r\n')
 
 @app.route("/start")
 def start():

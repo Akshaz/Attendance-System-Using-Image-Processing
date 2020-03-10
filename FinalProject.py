@@ -6,6 +6,7 @@ import datetime
 import sys
 import picamera
 import io
+import config
 
 """
 Start: 
@@ -87,7 +88,6 @@ def read():
             camera.capture(data, format='jpeg')
     data = np.fromstring(data.getvalue(), dtype=np.uint8)
     image = cv2.imdecode(data, 1)
-    cv2.imwrite(config.DEBUG_IMAGE, image)
     return image
 
 """
@@ -161,16 +161,21 @@ def trainImage():
 """
 
 def recognize():
-    harcascadePath = "../haarcascade_frontalface_default.xml"
-    faceCascade = cv2.CascadeClassifier(harcascadePath) 
-    while(True): 
-        frame = read()
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        face = faceCascade.detectMultiScale(gray, 1.2,5)
-        for (x,y,w,h) in face:
-            cv2.rectangle(frame,(x,y),(x+w,y+h),(225,0,0),2)
-        cv2.imwrite("output.jpg", frame)
-
+	harcascadePath = "haarcascade_frontalface_default.xml"
+	print(os.path.exists(harcascadePath))
+	faceCascade = cv2.CascadeClassifier(harcascadePath)
+	while(True):
+		print("Reading")
+		frame = read()
+		print("Read")
+		gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+		face = faceCascade.detectMultiScale(gray, 1.2,5)
+		for (x,y,w,h) in face:
+			cv2.rectangle(frame,(x,y),(x+w,y+h),(225,0,0),2)
+		print("Writing")
+		cv2.imwrite("output.jpg", frame)
+		print("Written")
+recognize()
 """
 def generateList():
     
